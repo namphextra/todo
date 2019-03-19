@@ -9,6 +9,6 @@ const port = process.env.PORT || 2400;
 new Middleware(app);
 models.connect();
 new Controller(app);
-models.end();
+// models.end();
 
 app.listen(port);
