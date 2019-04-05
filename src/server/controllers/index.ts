@@ -1,19 +1,20 @@
-import User from './user'
-import Authentication from './authentication'
+import User from './user';
+import Authentication from './authentication';
 
 class Controller {
+  private _user: any = null
+
+  private _auth: any = null
+
   constructor(app: any) {
-    const user: any = new User(app);
-    const auth: any = new Authentication(app);
-    user.createUser();
-    auth.createCredential();
-    app.get('/api/v1/user', (req: any, res: any) => {
-      console.log(res);
-      res.send({ success: true });
-    });
+    this._user = new User(app);
+    this._auth = new Authentication(app);
+  }
 
-
+  public init() {
+    this._user.init();
+    this._auth.init();
   }
 }
 
-export default Controller
+export default Controller;

@@ -1,8 +1,8 @@
-import Util from 'util'
-import Connection from './index';
+import Util from 'util';
+import Connection from './database';
 
 class Base {
-  query: any = Util.promisify(Connection.query).bind(Connection);
+  protected query: any = Util.promisify(Connection.query).bind(Connection);
 }
 
-export default Base
+export default Base;

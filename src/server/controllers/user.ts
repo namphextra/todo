@@ -1,23 +1,45 @@
+import bcrypt from 'bcrypt';
+import express from 'express';
+import HTTPStatus from 'http-status';
 import Base from './base';
-import bcrypt from "bcrypt";
 import UserModel from '../models/user';
+import Middleware from '../middleware';
 
 class User extends Base {
-  private _model: any = new UserModel();
-  constructor(app: any) {
-    super(app)
+  private _model = new UserModel()
+
+  private _router = express.Router()
+
+  public init() {
+    this.app.use('/api/v1/user', this._router);
+    this._createUser();
+    this._getUser();
   }
-  public createUser() {
-    this.app.post('/api/v1/user', (req: any, res: any) => {
+
+  private _createUser() {
+    this._router.post('/', async (req: any, res: any) => {
       const { username } = req.body;
       const { password } = req.body;
       const { email } = req.body;
-      const salt = bcrypt.genSaltSync(5);
+      const saltRound = 5;
+      const salt = bcrypt.genSaltSync(saltRound);
       const hash = bcrypt.hashSync(password, salt);
-      this._model.createUser(username, hash, email);
-      res.send({ success: true })
+      const result = await this._model.createUser(username, hash, email);
+      if (result.success) {
+        res.status(HTTPStatus.CREATED).send({ success: true });
+      } else {
+        res
+          .status(HTTPStatus.INTERNAL_SERVER_ERROR)
+          .send({ success: false, message: result.message });
+      }
+    });
+  }
+
+  private _getUser() {
+    this._router.get('/', this._middleware.authenJWT, (req: any, res: any) => {
+      res.status(HTTPStatus.OK).send({ success: true });
     });
   }
 }
 
-export default User
+export default User;

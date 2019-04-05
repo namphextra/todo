@@ -1,14 +1,16 @@
-import Connection from './index'
-import Util from 'util'
+import Base from './base';
 
-class User {
-  public async createUser (username: string, hash: string, email: string) {
+class User extends Base {
+  public async createUser(username: string, hash: string, email: string) {
     const queryString = `INSERT INTO users (username, password, email) VALUES ('${username}', '${hash}', '${email}')`;
 
-    const query = Util.promisify(Connection.query);
-    const result = await query(queryString);
-    console.log(result);
+    try {
+      await this.query(queryString);
+      return { success: true };
+    } catch (e) {
+      return { success: false, message: e };
+    }
   }
 }
 
-export default User
+export default User;
