@@ -21,3 +21,23 @@ export function getDefaultTodo(): Todo {
     CreatedAt: 0,
   };
 }
+
+export interface User {
+  Id: number,
+  Username: string,
+  Password: string,
+  Email: string,
+  CreatedAt: number,
+  UpdatedAt: number,
+}
+
+export function getDefaultUser(): User {
+  return {
+    Id: 0,
+    CreatedAt: 0,
+    Email: '',
+    Password: '',
+    UpdatedAt: 0,
+    Username: '',
+  };
+}
