@@ -7,8 +7,8 @@ class Todo extends Base {
 
   private _table: MysqlUtils.Table = {
     Name: 'todos',
-    AutoUpdateTimeColumns: [],
-    DateTimeColumns: [],
+    AutoUpdateTimeColumns: ['updated_at'],
+    DateTimeColumns: ['updated_at', 'created_at'],
   }
 
   public async createTodo(todo: Entities.Todo) {
@@ -17,7 +17,7 @@ class Todo extends Base {
     const queryString = `INSERT INTO ${sqlTool.getTableName()} (${sqlTool.getColumns()}) VALUES (${sqlTool.getValue()})`;
 
     try {
-      await this.query(queryString);
+      await sqlTool.insert(queryString);
       return { success: true };
     } catch (e) {
       return { success: false, message: e };
@@ -30,8 +30,8 @@ class Todo extends Base {
     const queryString = `SELECT ${sqlTool.getColumns()} FROM ${sqlTool.getTableName()}`;
 
     try {
-      await this.query(queryString);
-      return { success: true };
+      const result = await sqlTool.select(queryString);
+      return { success: true, todos: result };
     } catch (e) {
       return { success: false, message: e };
     }

@@ -3,7 +3,7 @@ import express from 'express';
 import HTTPStatus from 'http-status';
 import Base from './base';
 import UserModel from '../models/user';
-import Middleware from '../middleware';
+import * as Entities from '../entities';
 
 class User extends Base {
   private _model = new UserModel()
@@ -22,9 +22,15 @@ class User extends Base {
       const { password } = req.body;
       const { email } = req.body;
       const saltRound = 5;
-      const salt = bcrypt.genSaltSync(saltRound);
-      const hash = bcrypt.hashSync(password, salt);
-      const result = await this._model.createUser(username, hash, email);
+      const salt = await bcrypt.genSaltSync(saltRound);
+      const hash = await bcrypt.hashSync(password, salt);
+      const user: Entities.User = Entities.getDefaultUser();
+      user.Email = email;
+      user.Password = hash;
+      user.Username = username;
+      user.CreatedAt = Math.floor(new Date().getTime() / 1000);
+
+      const result = await this._model.createUser(user);
       if (result.success) {
         res.status(HTTPStatus.CREATED).send({ success: true });
       } else {
@@ -36,8 +42,16 @@ class User extends Base {
   }
 
   private _getUser() {
-    this._router.get('/', this._middleware.authenJWT, (req: any, res: any) => {
-      res.status(HTTPStatus.OK).send({ success: true });
+    this._router.get('/', this._middleware.authenJWT, async (req: any, res: any) => {
+      const result = await this._model.getAllUser();
+
+      if (result.success) {
+        res.status(HTTPStatus.OK).send({ success: true, users: result.users });
+      } else {
+        res
+          .status(HTTPStatus.INTERNAL_SERVER_ERROR)
+          .send(result.message);
+      }
     });
   }
 }

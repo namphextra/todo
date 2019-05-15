@@ -1,6 +1,6 @@
 import express from 'express';
 import HTTPStatus from 'http-status';
-import * as Entities from '@/server/entities/index';
+import * as Entities from '../entities';
 import Base from './base';
 import TodoModel from '../models/todo';
 
@@ -20,7 +20,10 @@ class Todo extends Base {
       const result = await this._model.getAllTodo();
 
       if (result.success) {
-        res.status(HTTPStatus.OK).send({ success: true });
+        res.status(HTTPStatus.OK).send({
+          success: true,
+          todos: result.todos,
+        });
       } else {
         res.status(HTTPStatus.INTERNAL_SERVER_ERROR).send(result.message);
       }
@@ -31,7 +34,7 @@ class Todo extends Base {
     this._router.post('/', this._middleware.authenJWT, async (req, res) => {
       const todo: Entities.Todo = {
         Id: 0,
-        UpdatedAt: Math.floor(new Date().getTime() / 1000),
+        UpdatedAt: 0,
         IsImportant: req.body.is_important,
         Type: req.body.type,
         Content: req.body.content,
