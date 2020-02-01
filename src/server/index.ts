@@ -1,15 +1,18 @@
-import express from 'express';
+import { Express } from 'express';
+import cors from 'cors';
 import Controller from './controllers';
 
-const cors = require('cors');
+const express = require('express');
 
-const app = express();
+const app: Express = express();
 const port = process.env.PORT || 2400;
+// const corsOptions: cors.CorsOptions = {
+//   origin: '*',
+//   methods: 'GET,POST,DELETE,PUT,PATCH,HEAD,OPTIONS',
+//   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'X-Access-Token'],
+// };
 
-app.use(cors({
-  origin: '*',
-  optionSuccessStatus: 200,
-}));
+app.use(cors);
 
 const controller = new Controller(app);
 
