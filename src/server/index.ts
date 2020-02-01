@@ -1,15 +1,16 @@
-import express from 'express';
+import { Express } from 'express';
 import Controller from './controllers';
 
-const cors = require('cors');
+const express = require('express');
 
-const app = express();
+const app: Express = express();
 const port = process.env.PORT || 2400;
 
-app.use(cors({
-  origin: '*',
-  optionSuccessStatus: 200,
-}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 const controller = new Controller(app);
 
