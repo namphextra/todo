@@ -12,6 +12,10 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/', (req, res) => {
+  res.send('Hello bitch');
+})
+
 const controller = new Controller(app);
 
 controller.init();
